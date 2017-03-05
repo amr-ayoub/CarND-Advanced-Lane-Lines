@@ -14,8 +14,10 @@ The goals / steps of this project are the following:
 * Warp the detected lane boundaries back onto the original image.
 * Output visual display of the lane boundaries and numerical estimation of lane curvature and vehicle position.
 
-## [Rubric](https://review.udacity.com/#!/rubrics/571/view) Points
-###Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
+### Rubric Points
+Here I will consider the rubric points individually and describe how I addressed each point in my implementation.
+Available here (https://review.udacity.com/#!/rubrics/571/view)
+
 
 
 ## Camera Calibration
@@ -29,10 +31,10 @@ Then Calculated the Camera Calibration data and save them to camera_calibration.
 
 
 
-## Example of calibration image with drawing corners
+#### Example of calibration image with drawing corners
 ![alt text](output_images/chess_image_with_corners.jpg)
 
-## Example of calibration images before and after undistortion
+#### Example of calibration images before and after undistortion
 ![alt text](examples_images_undistorted/image1_undistorted.jpg)
 ![alt text](examples_images_undistorted/image2_undistorted.jpg)
 ![alt text](examples_images_undistorted/image3_undistorted.jpg)
@@ -41,21 +43,22 @@ Then Calculated the Camera Calibration data and save them to camera_calibration.
 
 ## Pipeline (single image analysis)
 
-The analysis of the algorithm and the main code to detect lane lines are in the notebook [Camera_calibrate_undistort.ipynb](Camera_calibrate_undistort.ipynb).
+The analysis of the algorithm and the main code to detect lane lines are in the notebook [main.ipynb](main.ipynb).
 
 ### The implemented the lane finding algorithm in the following steps:
 
 ### 1- Display example image from test_images folder and undistor it
 In this step, a new image is read by the program and the image is undistorted using precomputed camera distortion matrices.
 
-### Original image
+#### Original image
 ![alt text](output_images/original_image.jpg)
 
-### Undistorted
+#### Undistorted
 ![alt text](output_images/undistor_image.jpg)
 
 
-### 2- Perspective transform: Read in the undistorted image and apply perspective transform. Perspective transformation gives us bird's eye view of the road, this makes further processing easier as any irrelevant information about background is removed from the warped image. 
+### 2- Perspective transform: 
+Read in the undistorted image and apply perspective transform. Perspective transformation gives us bird's eye view of the road, this makes further processing easier as any irrelevant information about background is removed from the warped image. 
 
 This resulted in the following source and destination points:
 
@@ -67,12 +70,58 @@ This resulted in the following source and destination points:
 | 512.   480.   | 0.     0.     |
 
 
-### Undistorted with source points
+#### Undistorted with source points
 ![alt text](output_images/perspective_source_points.jpg)
 
 
-### warped with Destination points
+#### warped with Destination points
 ![alt text](output_images/perspective_transformed.jpg)
+
+
+### 3- Color Masks
+Converting the image from RGB to HSV space then applying color masks to identify yellow and white pixels in the warped image. 
+
+First, identify the yellow color by choosing the pixels with HSV channels from [ 0, 100, 100] and [ 80, 255, 255].
+Second, for the white color pixels we choose HSV channels from [ 0, 0, 160] to [ 255, 80, 255].
+
+#### Warped with yellow color choosen
+![alt text](output_images/yellow_masked.jpg)
+
+#### Warped with white color choosen
+![alt text](output_images/white_masked.jpg)
+
+#### Binary warped with white and yellow color combined
+![alt text](output_images/combined_color_masked.jpg)
+
+
+
+### 4- Sobel filters
+In this step we apply Sobel filter for the S channel of the warped image in HLS channels space.
+first we convert the image to the HLS format then we apply sobel filters in the X and Y directions to the thresholded S channel (S channel value between 70 and 255) of the warped image.
+
+#### Warped in thresholded HLS format
+![alt text](output_images/thresholded_HLS.jpg)
+
+#### Applying sobel X on S channel
+![alt text](output_images/sobel_x_on_s_channel.jpg)
+
+#### Applying sobel Y on S channel
+![alt text](output_images/sobel_y_on_s_channel.jpg)
+
+#### Combined Sobel filters
+![alt text](output_images/combined_sobel.jpg)
+
+
+
+
+### 5- Combine color masks and sobel filters
+In this step we get a binary image of the warped lanes after combining color masks and sobels filters.
+
+#### Applying color masks and sobel filters
+![alt text](output_images/combined_sobel_color_mask.jpg)
+
+
+
 
 
 
