@@ -92,7 +92,7 @@ This resulted in the following source and destination points:
 Converting the image from RGB to HSV space then applying color masks to identify yellow and white pixels in the warped image. 
 
 First, identify the yellow color by choosing the pixels with HSV channels from [ 0, 100, 100] and [ 80, 255, 255].
-Second, for the white color pixels we choose HSV channels from [ 0, 0, 160] to [ 255, 80, 255].
+Second, for the white color pixels we choose HSV channels from [ 0, 0, 160] to [ 255, 20, 255].
 
 #### Warped with yellow color choosen
 ![alt text](output_images/yellow_masked.jpg)
@@ -106,8 +106,8 @@ Second, for the white color pixels we choose HSV channels from [ 0, 0, 160] to [
 
 
 ### 4- Sobel filters
-In this step we apply Sobel filter for the S channel of the warped image in HLS channels space.
-first we convert the image to the HLS format then we apply sobel filters in the X and Y directions to the thresholded S channel (S channel value between 70 and 255) of the warped image.
+In this step we apply Sobel filter for the S and L channels of the warped image in HLS channels space.
+first we convert the image to the HLS format then we apply sobel filters in the X and Y directions to the thresholded S  and L channels of the warped image.
 
 #### Warped in thresholded HLS format
 ![alt text](output_images/thresholded_HLS.jpg)
@@ -117,6 +117,12 @@ first we convert the image to the HLS format then we apply sobel filters in the 
 
 #### Applying sobel Y on S channel
 ![alt text](output_images/sobel_y_on_s_channel.jpg)
+
+
+#### Applying sobel X on L channel
+![alt text](output_images/sobel_x_on_L_channel.jpg)
+#### Applying sobel Y on L channel
+![alt text](output_images/sobel_y_on_L_channel.jpg)
 
 #### Combined Sobel filters
 ![alt text](output_images/combined_sobel.jpg)
