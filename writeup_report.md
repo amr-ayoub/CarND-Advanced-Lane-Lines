@@ -43,9 +43,9 @@ Then Calculated the Camera Calibration data and save them to camera_calibration.
 
 ## Pipeline (single image analysis)
 
-The analysis of the algorithm and the main code to detect lane lines are in the notebook [main.ipynb](main.ipynb).
+#### The analysis of the algorithm and the main code to detect lane lines are in the notebook [main.ipynb](main.ipynb).
 
-### The implemented the lane finding algorithm in the following steps:
+### The implemented lane finding algorithm is in the following steps:
 
 ### 1- Display example image from test_images folder and undistor it
 In this step, a new image is read by the program and the image is undistorted using precomputed camera distortion matrices.
@@ -58,7 +58,7 @@ In this step, a new image is read by the program and the image is undistorted us
 
 
 ### 2- Perspective transform: 
-Read in the undistorted image and apply perspective transform. Perspective transformation gives us bird's eye view of the road, this makes further processing easier as any irrelevant information about background is removed from the warped image. 
+Read in the undistorted image and apply perspective transform. Perspective transformation gives us bird's eye view of the road, this makes further processing easier as any irrelevant information about horizon or background is removed from the warped image. 
 
 This resulted in the following source and destination points:
 
@@ -136,9 +136,9 @@ Then I drew the lane area in green on the warped image.
 
 ![alt text](output_images/lane_area.jpg)
 
-### 3rd: Draw the lanes back on the original image
+#### 3rd: Draw the lanes back on the original image
 
-I warped the result back unto the original image using the inverse transformation matrix calculated earlier. The result is shown below:
+I warped the result back into the original image using the inverse transformation matrix calculated earlier. The result is shown below:
 
 ![alt text](output_images/lane_lines_area_original.jpg)
 
@@ -147,12 +147,13 @@ I warped the result back unto the original image using the inverse transformatio
 
 
 ## Pipeline (Project video)
-Now from the previous pipeline we know where the lines are we have a fit! In the video frames we don't need to do a blind search again, but instead we can just search in a margin around the previous line position.
+Now from the previous pipeline we know where the lines are, in the video frames we don't need to do a blind search again, but instead we can just search in a margin around the previous lines position.
 
-Same steps applied to the video frames(images) but added to them radius of curvature calculation and vehicle from centre offset.
+Same steps above applied to the video frames(images) but added to them radius of curvature calculation and vehicle offset from the centre.
 
-### Radius of curvature calculation and vehicle from centre offset
+### Radius of curvature calculation and vehicle offset from centre
 I used Udacity algorithm and code provided in the lesson.
+
 I used the formula below to find the radius of curvature:
 
 ![alt text](output_images/curvature_formula.png)
@@ -175,20 +176,20 @@ right_curverad = ((1 + (2*right_fit_cr[0]*y_eval*ym_per_pix + right_fit_cr[1])**
 ```
 
 For vehicle offset:
-Assuming the camera is mounted at the center of the car, such that the lane center is the midpoint between the two lines. The offset of the lane center from the center of the image (converted from pixels to meters) is the distance from the center of the lane.
+Assuming the camera is mounted at the front center of the vehicle, such that the lane center is the midpoint between the two lines. The offset of the lane center from the center of the image (converted from pixels to meters) is the distance from the center of the lane.
 
-Then finally I write the radius of curvature calculation and vehicle from centre offset on the video frames.
+Then finally I write the radius of curvatures and vehicle offset from the centre on the video frames.
 
 Here's a [link to my video result](./project_video_output.mp4)
 
 
 ## Discussion
 
-1- The most challenging part is to come up with a robust thresholding algorithm to detect the lanes and avoiding the effect of brightness and light conditions as much as I can, but still the pipeline suffers at frames with a very high brightness.
+1- The most challenging part in the project was to come up with a robust thresholding algorithm to detect the lanes and avoiding the effect of brightness and light conditions as much as I can, but still the pipeline suffers at frames with a very high brightness.
 
-2- For a more robust algorithm applicaple to real world application, it needs to  automatically detect the source points for warp and not just use a fixed ones like what I've chosen in my pipeline.
+2- For a more robust algorithm applicable to real world application, it needs to  automatically detect the source points for warp and not just use a fixed points like what I've chosen in my pipeline.
 
-3- I need to improve my understanding of the colour spaces, sobel and threshold combinations more to get better results.
+3- I need to improve my understanding of the different colour spaces, sobel and threshold combinations more to get better results.
 
 4- I feel that the values of curvatures are jittery, so I need a way to improve that.
 
