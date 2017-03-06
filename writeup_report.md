@@ -22,7 +22,7 @@ Available here (https://review.udacity.com/#!/rubrics/571/view)
 
 ## Camera Calibration
 
-### Camera calibration code is available in the notebook [Camera_calibrate_undistort.ipynb](Camera_calibrate_undistort.ipynb).  
+#### Camera calibration code is available in the notebook [Camera_calibrate_undistort.ipynb](Camera_calibrate_undistort.ipynb).  
 
 For my algorithm, I used the provided chessboard images in the the camera_cal directory. 
 3D Real world space points "Object points" are based on the Chessboard size (nx=9, ny=6). For the 2D image points from the corners out from the function cv2.findChessboardCorners().
@@ -121,22 +121,77 @@ In this step we get a binary image of the warped lanes after combining color mas
 ![alt text](output_images/combined_sobel_color_mask.jpg)
 
 
+### 6- Locate the Lane Lines and Fit a Polynomial
+For that I used Udacity algorithm and code provided in the lesson.
+Now I have a binary image where the lane lines stand out clearly.
+
+#### 1st: Taking a histogram along all the columns.
+
+![alt text](output_images/histogram.png)
+
+#### 2nd: Sliding Window
+In this histogram will be good indicators of the x-position of the base of the lane lines. I can use that as a starting point for where to search for the lines. From that point, I can use a sliding window, placed around the line centers, to find and follow the lines up to the top of the frame. Then used that to fit a 2nd order polynomial for both left and right lanes like shown in blue color below.
+
+Then I drew the lane area in green on the warped image.
+
+![alt text](output_images/lane_area.jpg)
+
+### 3rd: Draw the lanes back on the original image
+
+I warped the result back unto the original image using the inverse transformation matrix calculated earlier. The result is shown below:
+
+![alt text](output_images/lane_lines_area_original.jpg)
 
 
 
 
 
-###Pipeline (video)
+## Pipeline (Project video)
+Now from the previous pipeline we know where the lines are we have a fit! In the video frames we don't need to do a blind search again, but instead we can just search in a margin around the previous line position.
 
-####1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (wobbly lines are ok but no catastrophic failures that would cause the car to drive off the road!).
+Same steps applied to the video frames(images) but added to them radius of curvature calculation and vehicle from centre offset.
 
-Here's a [link to my video result](./project_video.mp4)
+### Radius of curvature calculation and vehicle from centre offset
+I used Udacity algorithm and code provided in the lesson.
+I used the formula below to find the radius of curvature:
 
----
+![alt text](output_images/curvature_formula.png)
 
-###Discussion
+A and B are the coefficients of the derivative of the second order polynomials used to find the fitted lines earlier. I calculated the radius of curvature at the point where y is maximum.
 
-####1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
+```python
+y_eval = np.max(ploty)
+```
+I converted pixel values to meters, as in the measurement on the road using the following:
 
-Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
+```python
+# Define conversions in x and y from pixels space to meters
+ym_per_pix = 30/720 # meters per pixel in y dimension
+xm_per_pix = 3.7/350 # meters per pixel in x dimension
+
+left_curverad = ((1 + (2*left_fit_cr[0]*y_eval*ym_per_pix + left_fit_cr[1])**2)**1.5) / np.absolute(2*left_fit_cr[0])
+right_curverad = ((1 + (2*right_fit_cr[0]*y_eval*ym_per_pix + right_fit_cr[1])**2)**1.5) / np.absolute(2*right_fit_cr[0])
+    
+```
+
+For vehicle offset:
+Assuming the camera is mounted at the center of the car, such that the lane center is the midpoint between the two lines. The offset of the lane center from the center of the image (converted from pixels to meters) is the distance from the center of the lane.
+
+Then finally I write the radius of curvature calculation and vehicle from centre offset on the video frames.
+
+Here's a [link to my video result](./project_video_output.mp4)
+
+
+## Discussion
+
+1- The most challenging part is to come up with a robust thresholding algorithm to detect the lanes and avoiding the effect of brightness and light conditions as much as I can, but still the pipeline suffers at frames with a very high brightness.
+
+2- For a more robust algorithm applicaple to real world application, it needs to  automatically detect the source points for warp and not just use a fixed ones like what I've chosen in my pipeline.
+
+3- I need to improve my understanding of the colour spaces, sobel and threshold combinations more to get better results.
+
+4- I feel that the values of curvatures are jittery, so I need a way to improve that.
+
+5- I believe the sliding window technique should be replaced with a better more robust one.
+ 
 
